@@ -23,7 +23,9 @@ django-admin test
 black .
 ```
 
-### Paths
+## Paths
+
+### Default paths
 
 ```
 localhost:8000/books/         [GET, POST]
@@ -34,4 +36,29 @@ localhost:8000/authors/       [GET, POST]
 localhost:8000/authors/X      [GET,PUT,DELETE]
 ```
 
+### Filter paths
 
+#### Books
+
+```
+localhost:8000/books/filter   [GET]
+```
+http params
+
+`page` (int) - exact number of pages
+
+`min_page` (int) - minimum pages. This param is igrnored if `page` is provided
+
+`max_page` (int) - maximum pages. This param is igrnored if `page` is provided
+
+`date` (str DD-MM-YYYY) - exact date published
+
+`min_date` (str DD-MM-YYYY) - minimum dates. This param is igrnored if `date` is provided
+
+`max_date` (str DD-MM-YYYY) - maximum dates. This param is igrnored if `date` is provided
+
+`author_id` (int) - author id
+
+`author_name` (str) - author name. This param is igrnored if `author_id` is provided
+
+`author_lastname` (str) - author last name. This param is igrnored if `author_id` is provided

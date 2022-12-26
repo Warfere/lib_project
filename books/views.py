@@ -114,11 +114,11 @@ class FilterBooks(generics.ListAPIView):
 
             if book_data_class.author_id:
                 books = books.filter(author=book_data_class.author_id)
-            if book_data_class.author_name:
+            if book_data_class.author_name and not book_data_class.author_id:
                 books = books.filter(author__name=book_data_class.author_name)
-            if book_data_class.author_lastname:
+            if book_data_class.author_lastname and not book_data_class.author_id:
                 books = books.filter(author__last_name=book_data_class.author_lastname)
-            if book_data_class.author_lastname and book_data_class.author_name:
+            if (book_data_class.author_lastname and book_data_class.author_name) and not book_data_class.author_id:
                 books = books.filter(
                     author__last_name=book_data_class.author_lastname,
                     author__name=book_data_class.author_name,

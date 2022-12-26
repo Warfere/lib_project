@@ -6,7 +6,12 @@ from .views import GetBooks, GetBookDetail, GetGenres
 from authors.views import GetAuthors
 
 
-class BooksrTestCase(APITestCase):
+class CustomAPITestCase(APITestCase):
+    def assertHTMLStatus200(self, response) -> None:
+        return super().assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class BooksrTestCase(CustomAPITestCase):
     def setUp(self):
         self.client = APIClient()
         get_user_model().objects.create_user(
@@ -84,10 +89,18 @@ class BooksrTestCase(APITestCase):
         data = {
             "name": "genre",
         }
-        request = self.factory.post("/authos", data=data)
+        request = self.factory.post(reverse("get_genres"), data=data)
         request.user = self.user
 
         GetGenres.as_view()(request)
+
+    
+    def test_get_genre(self):
+        response = self.client.get(reverse("get_genres"), format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.json()[0]["name"], "genre")
+        self.assertHTMLStatus200(response)
 
     def test_book_update(self):
         self.populate()
@@ -120,3 +133,4 @@ class BooksrTestCase(APITestCase):
         self.view(request, pk=id)
         response = self.client.get(reverse("get_books"), format="json")
         self.assertEqual(len(response.json()), 0)
+    
