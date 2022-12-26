@@ -7,4 +7,4 @@ urlpatterns = [
     path("authors/", include("authors.url")),
 ]
 
-urlpatterns.append(path('auth', include('rest_framework.urls')))
+urlpatterns.append(path("auth", include("rest_framework.urls")))

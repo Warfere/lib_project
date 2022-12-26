@@ -6,10 +6,11 @@ from rest_framework.response import Response
 import datetime
 from .book_dataclass import BookDataClass
 
+
 class GetBooks(generics.ListCreateAPIView):
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+
     def get_queryset(self):
         books = Book.objects.all()
         book_id = self.request.query_params.get("book_id")
@@ -18,10 +19,10 @@ class GetBooks(generics.ListCreateAPIView):
         return books
 
     def perform_create(self, serializer=GenreSerializer):
-        books = Book.objects.values('title')
+        books = Book.objects.values("title")
         for book in books:
-            if self.request.POST['natitleme'].lower() == book['title'].lower():
-                raise exceptions.ValidationError('Name must be unique', code=400)
+            if self.request.POST["natitleme"].lower() == book["title"].lower():
+                raise exceptions.ValidationError("Name must be unique", code=400)
         serializer.save()
 
 
@@ -36,10 +37,10 @@ class GetGenres(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer=GenreSerializer):
-        genres = Genre.objects.values('name')
+        genres = Genre.objects.values("name")
         for genre in genres:
-            if self.request.POST['name'].lower() == genre['name'].lower():
-                raise exceptions.ValidationError('Name must be unique', code=400)
+            if self.request.POST["name"].lower() == genre["name"].lower():
+                raise exceptions.ValidationError("Name must be unique", code=400)
         serializer.save()
 
     def get_queryset(self):
@@ -59,12 +60,14 @@ class GetGenreDetail(generics.RetrieveUpdateDestroyAPIView):
 class FilterBooks(generics.ListAPIView):
     serializer_class = BookSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    
+
     def get_queryset(self):
         books = Book.objects.filter()
         validate_params = self.validate_search_params(self.request.query_params)
         if not validate_params[1]:
-            raise exceptions.ParseError(f'{validate_params[0]} is not recognized as filter', code=400)
+            raise exceptions.ParseError(
+                f"{validate_params[0]} is not recognized as filter", code=400
+            )
         book_data_class = BookDataClass(
             pages=self.request.query_params.get("pages"),
             min_pages=self.request.query_params.get("min_pages"),
@@ -76,23 +79,39 @@ class FilterBooks(generics.ListAPIView):
             author_name=self.request.query_params.get("author_name"),
             author_lastname=self.request.query_params.get("author_lastname"),
         )
-        try: 
+        try:
             if book_data_class.pages:
                 books = books.filter(number_of_pages=book_data_class.pages)
-            
-            if (book_data_class.min_pages or book_data_class.max_pages) and not book_data_class.pages:
-                min_pages = book_data_class.min_pages if book_data_class.min_pages else 0
-                max_pages = book_data_class.max_pages if book_data_class.max_pages else 999999
+
+            if (
+                book_data_class.min_pages or book_data_class.max_pages
+            ) and not book_data_class.pages:
+                min_pages = (
+                    book_data_class.min_pages if book_data_class.min_pages else 0
+                )
+                max_pages = (
+                    book_data_class.max_pages if book_data_class.max_pages else 999999
+                )
                 books = books.filter(number_of_pages__range=(min_pages, max_pages))
-            
+
             if book_data_class.date:
                 books = books.filter(pub_date=book_data_class.date)
-            
-            if (book_data_class.min_date or book_data_class.max_date) and not book_data_class.date:
-                min_date = book_data_class.min_date if book_data_class.min_date else datetime.date(0, 1, 3)
-                max_date = book_data_class.max_date if book_data_class.max_date else datetime.date(9999, 12, 12)
+
+            if (
+                book_data_class.min_date or book_data_class.max_date
+            ) and not book_data_class.date:
+                min_date = (
+                    book_data_class.min_date
+                    if book_data_class.min_date
+                    else datetime.date(0, 1, 3)
+                )
+                max_date = (
+                    book_data_class.max_date
+                    if book_data_class.max_date
+                    else datetime.date(9999, 12, 12)
+                )
                 books = books.filter(pub_date__gt=min_date, pub_date__lt=max_date)
-            
+
             if book_data_class.author_id:
                 books = books.filter(author=book_data_class.author_id)
             if book_data_class.author_name:
@@ -100,11 +119,13 @@ class FilterBooks(generics.ListAPIView):
             if book_data_class.author_lastname:
                 books = books.filter(author__last_name=book_data_class.author_lastname)
             if book_data_class.author_lastname and book_data_class.author_name:
-                books = books.filter(author__last_name=book_data_class.author_lastname, author__name=book_data_class.author_name)
+                books = books.filter(
+                    author__last_name=book_data_class.author_lastname,
+                    author__name=book_data_class.author_name,
+                )
         except ValueError as e:
             raise exceptions.ParseError(e, code=400)
         return books
-
 
     def validate_search_params(self, params):
         for param in params.keys():

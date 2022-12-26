@@ -7,7 +7,7 @@ from typing import Optional
 class BookDataClass:
     pages: Optional[int]
     date: Optional[datetime.datetime]
-    
+
     author_id: Optional[int]
     author_name: Optional[str]
     author_lastname: Optional[str]

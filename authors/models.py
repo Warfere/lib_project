@@ -10,8 +10,7 @@ class Author(models.Model):
     facebook_username = models.CharField("Facebook username", max_length=120)
 
     def __str__(self):
-        return(self.name)
+        return self.name
 
     class Meta:
         db_table = "author"
-        
