@@ -2,7 +2,6 @@ from rest_framework import generics
 from .models import Book, Genre
 from .serializers import BookSerializer, GenreSerializer
 from rest_framework import permissions, exceptions
-from rest_framework.response import Response
 import datetime
 from .book_dataclass import BookDataClass
 
@@ -68,7 +67,7 @@ class FilterBooks(generics.ListAPIView):
             raise exceptions.ParseError(
                 f"{validate_params[0]} is not recognized as filter", code=400
             )
-        book_data_class = BookDataClass(
+        book_dataclass = BookDataClass(
             pages=self.request.query_params.get("pages"),
             min_pages=self.request.query_params.get("min_pages"),
             max_pages=self.request.query_params.get("max_pages"),
@@ -81,55 +80,54 @@ class FilterBooks(generics.ListAPIView):
             title=self.request.query_params.get("title"),
         )
         try:
-            if book_data_class.pages:
-                books = books.filter(number_of_pages=book_data_class.pages)
+            if book_dataclass.pages:
+                books = books.filter(number_of_pages=book_dataclass.pages)
 
             if (
-                book_data_class.min_pages or book_data_class.max_pages
-            ) and not book_data_class.pages:
+                book_dataclass.min_pages or book_dataclass.max_pages
+            ) and not book_dataclass.pages:
                 min_pages = (
-                    book_data_class.min_pages if book_data_class.min_pages else 0
+                    book_dataclass.min_pages if book_dataclass.min_pages else 0
                 )
                 max_pages = (
-                    book_data_class.max_pages if book_data_class.max_pages else 999999
+                    book_dataclass.max_pages if book_dataclass.max_pages else 999999
                 )
                 books = books.filter(number_of_pages__range=(min_pages, max_pages))
 
-            if book_data_class.date:
-                books = books.filter(pub_date=book_data_class.date)
+            if book_dataclass.date:
+                books = books.filter(pub_date=book_dataclass.date)
 
             if (
-                book_data_class.min_date or book_data_class.max_date
-            ) and not book_data_class.date:
+                book_dataclass.min_date or book_dataclass.max_date
+            ) and not book_dataclass.date:
                 min_date = (
-                    book_data_class.min_date
-                    if book_data_class.min_date
+                    book_dataclass.min_date
+                    if book_dataclass.min_date
                     else datetime.date(0, 1, 3)
                 )
                 max_date = (
-                    book_data_class.max_date
-                    if book_data_class.max_date
+                    book_dataclass.max_date
+                    if book_dataclass.max_date
                     else datetime.date(9999, 12, 12)
                 )
                 books = books.filter(pub_date__gt=min_date, pub_date__lt=max_date)
 
-            if book_data_class.author_id:
-                books = books.filter(author=book_data_class.author_id)
-            if book_data_class.author_name and not book_data_class.author_id:
-                books = books.filter(author__name=book_data_class.author_name)
-            if book_data_class.author_lastname and not book_data_class.author_id:
-                books = books.filter(author__last_name=book_data_class.author_lastname)
-            if (book_data_class.author_lastname and book_data_class.author_name) and not book_data_class.author_id:
+            if book_dataclass.author_id:
+                books = books.filter(author=book_dataclass.author_id)
+            if book_dataclass.author_name and not book_dataclass.author_id:
+                books = books.filter(author__name=book_dataclass.author_name)
+            if book_dataclass.author_lastname and not book_dataclass.author_id:
+                books = books.filter(author__last_name=book_dataclass.author_lastname)
+            if (book_dataclass.author_lastname and book_dataclass.author_name) and not book_dataclass.author_id:
                 books = books.filter(
-                    author__last_name=book_data_class.author_lastname,
-                    author__name=book_data_class.author_name,
+                    author__last_name=book_dataclass.author_lastname,
+                    author__name=book_dataclass.author_name,
                 )
-            if book_data_class.title:
-                if book_data_class.title[0] == "*" and book_data_class.title[-1] == "*":
-                    print(book_data_class.title)
-                    books = books.filter(title__icontains=book_data_class.title[1:-1])
+            if book_dataclass.title:
+                if book_dataclass.title[0] == "*" and book_dataclass.title[-1] == "*":
+                    books = books.filter(title__icontains=book_dataclass.title[1:-1])
                 else:
-                    books = books.filter(title=book_data_class.title)
+                    books = books.filter(title=book_dataclass.title)
                 
         except ValueError as e:
             raise exceptions.ParseError(e, code=400)
