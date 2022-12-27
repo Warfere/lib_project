@@ -51,11 +51,11 @@ http params
 
 `max_page` (int) - maximum pages. This param is igrnored if `page` is provided
 
-`date` (str DD-MM-YYYY) - exact date published
+`date` (str MM-DD-YYYY) - exact date published
 
-`min_date` (str DD-MM-YYYY) - minimum dates. This param is igrnored if `date` is provided
+`min_date` (str MM-DD-YYYY) - minimum dates. This param is igrnored if `date` is provided
 
-`max_date` (str DD-MM-YYYY) - maximum dates. This param is igrnored if `date` is provided
+`max_date` (str MM-DD-YYYY) - maximum dates. This param is igrnored if `date` is provided
 
 `author_id` (int) - author id
 

@@ -12,6 +12,8 @@ class BookDataClass:
     author_name: Optional[str]
     author_lastname: Optional[str]
 
+    title: Optional[str]
+
     min_pages: int = 0
     max_pages: int = 9999
 

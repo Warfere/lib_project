@@ -21,7 +21,7 @@ class GetBooks(generics.ListCreateAPIView):
     def perform_create(self, serializer=GenreSerializer):
         books = Book.objects.values("title")
         for book in books:
-            if self.request.POST["natitleme"].lower() == book["title"].lower():
+            if self.request.POST["title"].lower() == book["title"].lower():
                 raise exceptions.ValidationError("Name must be unique", code=400)
         serializer.save()
 
@@ -78,6 +78,7 @@ class FilterBooks(generics.ListAPIView):
             author_id=self.request.query_params.get("author_id"),
             author_name=self.request.query_params.get("author_name"),
             author_lastname=self.request.query_params.get("author_lastname"),
+            title=self.request.query_params.get("title"),
         )
         try:
             if book_data_class.pages:
@@ -123,6 +124,13 @@ class FilterBooks(generics.ListAPIView):
                     author__last_name=book_data_class.author_lastname,
                     author__name=book_data_class.author_name,
                 )
+            if book_data_class.title:
+                if book_data_class.title[0] == "*" and book_data_class.title[-1] == "*":
+                    print(book_data_class.title)
+                    books = books.filter(title__icontains=book_data_class.title[1:-1])
+                else:
+                    books = books.filter(title=book_data_class.title)
+                
         except ValueError as e:
             raise exceptions.ParseError(e, code=400)
         return books
