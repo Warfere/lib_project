@@ -26,9 +26,19 @@ class Book(models.Model):
         Author,
         db_index=True,
     )
-    genre = models.ForeignKey(Genre, on_delete=models.CASCADE, db_index=True, default=0)
+    genre = models.ForeignKey(Genre, on_delete=models.PROTECT, db_index=True, default=0) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def delete(self):
+        authors = Author.objects.filter(book=self)
+        if authors:
+            for author in authors:
+                books = Book.objects.filter(author=author)
+                if books.count() == 1:
+                    author.delete()
+        super(Book, self).delete()
+
 
     class Meta:
         db_table = "books"

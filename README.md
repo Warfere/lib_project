@@ -62,3 +62,17 @@ http params
 `author_name` (str) - author name. This param is igrnored if `author_id` is provided
 
 `author_lastname` (str) - author last name. This param is igrnored if `author_id` is provided
+
+#### Authors
+
+```
+localhost:8000/authors/filter   [GET]
+```
+http params
+
+`name` (str) - authors name. Adding `*` around param will do partial search
+
+`lastname` (str) - authors name. Adding `*` around param will do partial search
+
+`email` (str) - authors name. Adding `*` around param will do partial search
+

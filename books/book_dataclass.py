@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import datetime
-from typing import Optional
+from typing import Optional, Union, List
 
 
 @dataclass(frozen=True)

@@ -1,9 +1,9 @@
-from rest_framework import generics
 from .models import Book, Genre
 from .serializers import BookSerializer, GenreSerializer
-from rest_framework import permissions, exceptions
+from rest_framework import permissions, exceptions, response, status, generics
 import datetime
 from .book_dataclass import BookDataClass
+from django.db.models.deletion import ProtectedError
 
 
 class GetBooks(generics.ListCreateAPIView):
@@ -54,6 +54,18 @@ class GetGenreDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
+    
+    def destroy(self, request, *args, **kwargs):
+        try:
+            return super().destroy(request, *args, **kwargs)
+        except ProtectedError as protected_error:
+            protected_elements = [
+                {"id": protected_object.pk, "label": str(protected_object)}
+                for protected_object in protected_error.protected_objects
+            ]
+            response_data = {"protected_elements": protected_elements}
+            return response.Response(data=response_data, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class FilterBooks(generics.ListAPIView):
@@ -67,6 +79,7 @@ class FilterBooks(generics.ListAPIView):
             raise exceptions.ParseError(
                 f"{validate_params[0]} is not recognized as filter", code=400
             )
+
         book_dataclass = BookDataClass(
             pages=self.request.query_params.get("pages"),
             min_pages=self.request.query_params.get("min_pages"),

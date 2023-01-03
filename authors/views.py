@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, response, status
 from .models import Author
 from .serializers import AuthorSerializer
 from rest_framework import permissions, exceptions
@@ -35,6 +35,18 @@ class GetAuthorDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     queryset = Author.objects.all()
 
+    def destroy(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if obj.book_set.count() != 0:
+            protected_elements = [
+                {"id": protected_object['id'], "label": str(protected_object)}
+                for protected_object in obj.book_set.values('id')
+            ]
+            response_data = {"protected_elements": protected_elements}
+            return response.Response(data=response_data, status=status.HTTP_400_BAD_REQUEST)
+        
+        return super().destroy(request, *args, **kwargs)
+
 
 class FilterAuthors(generics.ListAPIView):
     serializer_class = AuthorSerializer
@@ -70,7 +82,7 @@ class FilterAuthors(generics.ListAPIView):
         for param in params.keys():
             if param not in AuthorDataClass.__dataclass_fields__.keys():
                 return param, False
-        return "", True
+        return None, True
     pass
 
     def exact_search(self, filter_value):

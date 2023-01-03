@@ -16,7 +16,7 @@ class AuthorTestCase(APITestCase):
         self.view = GetAuthors.as_view()
         self.url = reverse("get_author")
 
-    def test_post(self):
+    def test_post_author(self):
         data = {
             "name": "aaaaa",
             "last_name": "asdasd",
