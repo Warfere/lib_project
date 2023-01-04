@@ -5,6 +5,15 @@ from rest_framework import status
 from .views import GetAuthors, GetAuthorDetail
 
 
+DATA = {
+    "name": "aaaaa",
+    "last_name": "asdasd",
+    "phone": "123",
+    "email": "123",
+    "facebook_username": "asfas",
+}
+
+
 class AuthorTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
@@ -17,35 +26,22 @@ class AuthorTestCase(APITestCase):
         self.url = reverse("get_author")
 
     def test_post_author(self):
-        data = {
-            "name": "aaaaa",
-            "last_name": "asdasd",
-            "phone": "123",
-            "email": "123",
-            "facebook_username": "asfas",
-        }
-        request = self.factory.post(self.url, data=data)
+
+        request = self.factory.post(self.url, data=DATA)
         request.user = self.user
         response = self.view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data["name"], data["name"])
+        self.assertEqual(response.data["name"], DATA["name"])
 
     def test_get_authors(self):
         self.populate()
         response = self.client.get(reverse("get_author"), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
-        self.assertEqual(response.json()[0]["name"], "aaaaa")
+        self.assertEqual(response.json()[0]["name"], DATA["name"])
 
     def populate(self):
-        data = {
-            "name": "aaaaa",
-            "last_name": "asdasd",
-            "phone": "123",
-            "email": "123",
-            "facebook_username": "asfas",
-        }
-        request = self.factory.post(self.url, data=data)
+        request = self.factory.post(self.url, data=DATA)
         request.user = self.user
         self.view(request)
 
