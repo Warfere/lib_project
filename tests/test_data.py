@@ -29,7 +29,7 @@ AUTHOR_DATA_1 = {
     "name": "Foo",
     "last_name": "Bar",
     "phone": "123",
-    "email": "123",
+    "email": "email",
     "facebook_username": "asfas",
 }
 
@@ -37,7 +37,7 @@ AUTHOR_DATA_2 = {
     "name": "author",
     "last_name": "author_last",
     "phone": "123",
-    "email": "333",
+    "email": "mail",
     "facebook_username": "asfas",
 }
 

@@ -24,7 +24,7 @@ class AuthorTestCase(APITestCase):
         self.user = get_user_model().objects.get(username="admin")
         self.factory = APIRequestFactory()
         self.view = GetAuthorDetail.as_view()
-        self.url = reverse("get_author")
+        self.url = reverse("get_authors")
 
     def test_post_author(self):
         request = self.factory.post(self.url, data=DATA)
@@ -35,7 +35,7 @@ class AuthorTestCase(APITestCase):
 
     def test_get_authors(self):
         self.populate()
-        response = self.client.get(reverse("get_author"), format="json")
+        response = self.client.get(reverse("get_authors"), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0]["name"], DATA["name"])
@@ -47,7 +47,7 @@ class AuthorTestCase(APITestCase):
 
     def test_author_update(self):
         self.populate()
-        response = self.client.get(reverse("get_author"), format="json")
+        response = self.client.get(reverse("get_authors"), format="json")
         id = response.json()[0]["id"]
         data = {
             "name": "333",
@@ -59,29 +59,29 @@ class AuthorTestCase(APITestCase):
         request = self.factory.put(self.url, data)
         request.user = self.user
         self.view(request, pk=id)
-        response = self.client.get(reverse("get_author"), format="json")
+        response = self.client.get(reverse("get_authors"), format="json")
         self.assertEqual(response.json()[0]["name"], "333")
 
     def test_author_remove(self):
         self.populate()
-        response = self.client.get(reverse("get_author"), format="json")
+        response = self.client.get(reverse("get_authors"), format="json")
         id = response.json()[0]["id"]
         request = self.factory.delete(self.url)
         request.user = self.user
         self.view(request, pk=id)
-        response = self.client.get(reverse("get_author"), format="json")
+        response = self.client.get(reverse("get_authors"), format="json")
         self.assertEqual(len(response.json()), 0)
 
     def test_author_book_constrain(self):
         self.populate()
         self.populate_genre()
-        response = self.client.get(reverse("get_author"), format="json")
+        response = self.client.get(reverse("get_authors"), format="json")
         id = response.json()[0]["id"]
         self.populate_book([id])
         request = self.factory.delete(self.url)
         request.user = self.user
         d = self.view(request, pk=id)
-        response = self.client.get(reverse("get_author"), format="json")
+        response = self.client.get(reverse("get_authors"), format="json")
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(d.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(len(d.data["protected_elements"]), 1)

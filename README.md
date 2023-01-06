@@ -75,7 +75,7 @@ http params
 
 `name` (str) - authors name. Adding `*` around param will do partial search
 
-`lastname` (str) - authors name. Adding `*` around param will do partial search
+`last_name` (str) - authors name. Adding `*` around param will do partial search
 
 `email` (str) - authors name. Adding `*` around param will do partial search
 

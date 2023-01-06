@@ -63,15 +63,15 @@ class FilterAuthors(generics.ListAPIView):
             )
         author_dataclass = AuthorDataClass(
             name=self.request.query_params.get("name"),
-            lastname=self.request.query_params.get("lastname"),
+            last_name=self.request.query_params.get("last_name"),
             email=self.request.query_params.get("email"),
         )
         try:
             if author_dataclass.name:
                 search = self.construct_search(author_dataclass.name, "name")
                 authors = authors.filter(**search)
-            if author_dataclass.lastname:
-                search = self.construct_search(author_dataclass.lastname, "lastname")
+            if author_dataclass.last_name:
+                search = self.construct_search(author_dataclass.last_name, "last_name")
                 authors = authors.filter(**search)
             if author_dataclass.email:
                 search = self.construct_search(author_dataclass.email, "email")

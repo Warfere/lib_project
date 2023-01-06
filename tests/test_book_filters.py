@@ -10,7 +10,7 @@ from authors.models import Author
 from books.views import GetBooks, GetGenres, FilterBooks
 
 
-class AuthorTestCase(APITestCase):
+class BookFilterTestCase(APITestCase):
     def setUp(self) -> None:
         self.client = APIClient()
 
