@@ -23,13 +23,13 @@ class AuthorTestCase(APITestCase):
         self.assertEqual(len(response.json()), 2)
         for i, author in enumerate(AUTHOR_LIST):
             self.assertEqual(response.json()[i]["name"], author["name"])
-    
+
     def test_filter_author_name(self):
         filter_url = self.url + "?name=Foo"
         response = self.client.get(filter_url, format="json")
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         filter_url = self.url + "?name=foo"
         response = self.client.get(filter_url, format="json")
         self.assertEqual(len(response.json()), 1)
@@ -46,7 +46,7 @@ class AuthorTestCase(APITestCase):
         print(response.json())
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         filter_url = self.url + "?last_name=BAR"
         response = self.client.get(filter_url, format="json")
         self.assertEqual(len(response.json()), 1)
@@ -56,14 +56,14 @@ class AuthorTestCase(APITestCase):
         response = self.client.get(filter_url, format="json")
         self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
     def test_filter_author_email(self):
         filter_url = self.url + "?email=mail"
         response = self.client.get(filter_url, format="json")
         print(response.json())
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
+
         filter_url = self.url + "?email=email"
         response = self.client.get(filter_url, format="json")
         self.assertEqual(len(response.json()), 1)
@@ -73,5 +73,3 @@ class AuthorTestCase(APITestCase):
         response = self.client.get(filter_url, format="json")
         self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        
-    
