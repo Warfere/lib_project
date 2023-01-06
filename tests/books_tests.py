@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase, APIRequestFactory, APIClient
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
-from .views import GetBooks, GetBookDetail, GetGenres
+from ..views import GetBooks, GetBookDetail, GetGenres
 from authors.views import GetAuthors
 
 
@@ -31,7 +31,7 @@ class CustomAPITestCase(APITestCase):
         return super().assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class BooksrTestCase(CustomAPITestCase):
+class AuthorsrTestCase(CustomAPITestCase):
     def setUp(self):
         self.client = APIClient()
         get_user_model().objects.create_user(
@@ -69,8 +69,13 @@ class BooksrTestCase(CustomAPITestCase):
         request.user = self.user
 
         GetAuthors.as_view()(request)
-        
-        data = {**AUTHOR_DATA, 'name': 'name2', 'last_name': 'last_name2', 'email': 'new_email'}
+
+        data = {
+            **AUTHOR_DATA,
+            "name": "name2",
+            "last_name": "last_name2",
+            "email": "new_email",
+        }
         request = self.factory.post("/authos", data=data)
         request.user = self.user
 
@@ -85,7 +90,6 @@ class BooksrTestCase(CustomAPITestCase):
 
         GetGenres.as_view()(request)
 
-    
     def test_get_genre(self):
         response = self.client.get(reverse("get_genres"), format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -107,10 +111,10 @@ class BooksrTestCase(CustomAPITestCase):
             "author": [1, 2],
         }
         self.view = GetBookDetail.as_view()
-        request = self.factory.put(self.url+str(id)+'/', data)
+        request = self.factory.put(self.url + str(id) + "/", data)
         request.user = self.user
         self.view(request, pk=id)
-        response = self.client.get(reverse("get_books")+str(id)+'/', format="json")
+        response = self.client.get(reverse("get_books") + str(id) + "/", format="json")
         self.assertEqual(response.json()["title"], "333")
         self.assertEqual(response.json()["author"], [1, 2])
 
@@ -124,4 +128,3 @@ class BooksrTestCase(CustomAPITestCase):
         self.view(request, pk=id)
         response = self.client.get(reverse("get_books"), format="json")
         self.assertEqual(len(response.json()), 0)
-    

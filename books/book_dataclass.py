@@ -8,7 +8,7 @@ class BookDataClass:
     pages: Optional[int]
     date: Optional[datetime.datetime]
 
-    author_id: Optional[int]
+    author_id: Union[int, List[int]]
     author_name: Optional[str]
     author_lastname: Optional[str]
 

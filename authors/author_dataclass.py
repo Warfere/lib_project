@@ -7,4 +7,3 @@ class AuthorDataClass:
     name: Optional[str]
     lastname: Optional[str]
     email: Optional[str]
-

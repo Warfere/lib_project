@@ -4,6 +4,8 @@ from rest_framework import permissions, exceptions, response, status, generics
 import datetime
 from .book_dataclass import BookDataClass
 from django.db.models.deletion import ProtectedError
+import json
+from django.db.models import Count
 
 
 class GetBooks(generics.ListCreateAPIView):
@@ -54,7 +56,7 @@ class GetGenreDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
-    
+
     def destroy(self, request, *args, **kwargs):
         try:
             return super().destroy(request, *args, **kwargs)
@@ -64,8 +66,9 @@ class GetGenreDetail(generics.RetrieveUpdateDestroyAPIView):
                 for protected_object in protected_error.protected_objects
             ]
             response_data = {"protected_elements": protected_elements}
-            return response.Response(data=response_data, status=status.HTTP_400_BAD_REQUEST)
-
+            return response.Response(
+                data=response_data, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class FilterBooks(generics.ListAPIView):
@@ -99,9 +102,7 @@ class FilterBooks(generics.ListAPIView):
             if (
                 book_dataclass.min_pages or book_dataclass.max_pages
             ) and not book_dataclass.pages:
-                min_pages = (
-                    book_dataclass.min_pages if book_dataclass.min_pages else 0
-                )
+                min_pages = book_dataclass.min_pages if book_dataclass.min_pages else 0
                 max_pages = (
                     book_dataclass.max_pages if book_dataclass.max_pages else 999999
                 )
@@ -116,7 +117,7 @@ class FilterBooks(generics.ListAPIView):
                 min_date = (
                     book_dataclass.min_date
                     if book_dataclass.min_date
-                    else datetime.date(0, 1, 3)
+                    else datetime.date(1, 1, 3)
                 )
                 max_date = (
                     book_dataclass.max_date
@@ -126,12 +127,19 @@ class FilterBooks(generics.ListAPIView):
                 books = books.filter(pub_date__gt=min_date, pub_date__lt=max_date)
 
             if book_dataclass.author_id:
-                books = books.filter(author=book_dataclass.author_id)
+                author = book_dataclass.author_id
+                try:
+                    author = json.loads(book_dataclass.author_id)
+                    books = self.get_exact_match(author)
+                except:
+                    books = books.filter(author__exact=author)
             if book_dataclass.author_name and not book_dataclass.author_id:
                 books = books.filter(author__name=book_dataclass.author_name)
             if book_dataclass.author_lastname and not book_dataclass.author_id:
                 books = books.filter(author__last_name=book_dataclass.author_lastname)
-            if (book_dataclass.author_lastname and book_dataclass.author_name) and not book_dataclass.author_id:
+            if (
+                book_dataclass.author_lastname and book_dataclass.author_name
+            ) and not book_dataclass.author_id:
                 books = books.filter(
                     author__last_name=book_dataclass.author_lastname,
                     author__name=book_dataclass.author_name,
@@ -141,7 +149,7 @@ class FilterBooks(generics.ListAPIView):
                     books = books.filter(title__icontains=book_dataclass.title[1:-1])
                 else:
                     books = books.filter(title=book_dataclass.title)
-                
+
         except ValueError as e:
             raise exceptions.ParseError(e, code=400)
         return books
@@ -151,3 +159,9 @@ class FilterBooks(generics.ListAPIView):
             if param not in BookDataClass.__dataclass_fields__.keys():
                 return param, False
         return "", True
+
+    def get_exact_match(self, ids):
+        query = Book.objects.annotate(count=Count("author")).filter(count=len(ids))
+        for _id in ids:
+            query = query.filter(**{"author": _id})
+        return query

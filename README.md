@@ -6,6 +6,7 @@ Start Django server
 pip install -f reqs.txt
 django-admin makemigrations
 django-admin migrate
+django-admin createsuperuser
 django-admin runserver
 ```
 
@@ -45,17 +46,19 @@ localhost:8000/books/filter   [GET]
 ```
 http params
 
+`title` (str) - exact number of pages. Adding `*` around param will do partial search
+
 `page` (int) - exact number of pages
 
-`min_page` (int) - minimum pages. This param is igrnored if `page` is provided
+`min_pages` (int) - minimum pages. This param is igrnored if `page` is provided
 
-`max_page` (int) - maximum pages. This param is igrnored if `page` is provided
+`max_pages` (int) - maximum pages. This param is igrnored if `page` is provided
 
-`date` (str MM-DD-YYYY) - exact date published
+`date` (str YYYY-MM-DD) - exact date published
 
-`min_date` (str MM-DD-YYYY) - minimum dates. This param is igrnored if `date` is provided
+`min_date` (str YYYY-MM-DD) - minimum dates. This param is igrnored if `date` is provided
 
-`max_date` (str MM-DD-YYYY) - maximum dates. This param is igrnored if `date` is provided
+`max_date` (str YYYY-MM-DD) - maximum dates. This param is igrnored if `date` is provided
 
 `author_id` (int) - author id
 

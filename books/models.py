@@ -26,7 +26,7 @@ class Book(models.Model):
         Author,
         db_index=True,
     )
-    genre = models.ForeignKey(Genre, on_delete=models.PROTECT, db_index=True, default=0) 
+    genre = models.ForeignKey(Genre, on_delete=models.PROTECT, db_index=True, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,7 +38,6 @@ class Book(models.Model):
                 if books.count() == 1:
                     author.delete()
         super(Book, self).delete()
-
 
     class Meta:
         db_table = "books"

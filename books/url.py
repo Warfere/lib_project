@@ -6,5 +6,5 @@ urlpatterns = [
     path("genres/<int:pk>/", view=views.GetGenreDetail.as_view()),
     path("", view=views.GetBooks.as_view(), name="get_books"),
     path("<int:pk>/", view=views.GetBookDetail.as_view()),
-    path("filter/", view=views.FilterBooks.as_view()),
+    path("filter/", view=views.FilterBooks.as_view(), name="filter_books"),
 ]

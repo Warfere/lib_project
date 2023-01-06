@@ -39,12 +39,14 @@ class GetAuthorDetail(generics.RetrieveUpdateDestroyAPIView):
         obj = self.get_object()
         if obj.book_set.count() != 0:
             protected_elements = [
-                {"id": protected_object['id'], "label": str(protected_object)}
-                for protected_object in obj.book_set.values('id')
+                {"id": protected_object["id"], "label": str(protected_object)}
+                for protected_object in obj.book_set.values("id")
             ]
             response_data = {"protected_elements": protected_elements}
-            return response.Response(data=response_data, status=status.HTTP_400_BAD_REQUEST)
-        
+            return response.Response(
+                data=response_data, status=status.HTTP_400_BAD_REQUEST
+            )
+
         return super().destroy(request, *args, **kwargs)
 
 
@@ -66,13 +68,13 @@ class FilterAuthors(generics.ListAPIView):
         )
         try:
             if author_dataclass.name:
-                search = self.construct_search(author_dataclass.name, 'name')
+                search = self.construct_search(author_dataclass.name, "name")
                 authors = authors.filter(**search)
             if author_dataclass.lastname:
-                search = self.construct_search(author_dataclass.lastname, 'lastname')
+                search = self.construct_search(author_dataclass.lastname, "lastname")
                 authors = authors.filter(**search)
             if author_dataclass.email:
-                search = self.construct_search(author_dataclass.email, 'email')
+                search = self.construct_search(author_dataclass.email, "email")
                 authors = authors.filter(**search)
         except ValueError as e:
             raise exceptions.ParseError(e, code=400)
@@ -83,6 +85,7 @@ class FilterAuthors(generics.ListAPIView):
             if param not in AuthorDataClass.__dataclass_fields__.keys():
                 return param, False
         return None, True
+
     pass
 
     def exact_search(self, filter_value):
@@ -92,6 +95,6 @@ class FilterAuthors(generics.ListAPIView):
 
     def construct_search(self, filter_value, search_field):
         if self.exact_search(filter_value):
-            return {search_field+'__iexact': filter_value}
+            return {search_field + "__iexact": filter_value}
         else:
-            return {search_field+'__icontains': filter_value[1:-1]}
+            return {search_field + "__icontains": filter_value[1:-1]}
